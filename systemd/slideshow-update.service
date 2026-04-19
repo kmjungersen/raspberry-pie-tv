@@ -1,0 +1,15 @@
+[Unit]
+Description=Pull latest conference slides from git
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=@USER@
+Environment=REPO_DIR=@REPO_DIR@
+ExecStart=@REPO_DIR@/scripts/update.sh
+# Don't fail the boot if we're offline.
+SuccessExitStatus=0 1
+
+[Install]
+WantedBy=multi-user.target

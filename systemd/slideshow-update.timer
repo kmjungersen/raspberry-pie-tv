@@ -1,0 +1,12 @@
+[Unit]
+Description=Periodically pull latest conference slides
+
+[Timer]
+# First fire 5 min after boot, then every hour.
+OnBootSec=5min
+OnUnitActiveSec=1h
+Unit=slideshow-update.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,16 @@
+#!/bin/sh
+# REPO_DIR is injected here by scripts/install.sh.
+
+# Keep the screen on forever.
+xset s off
+xset s noblank
+xset -dpms
+
+# Hide the mouse cursor.
+unclutter -idle 0 -root &
+
+# Best-effort pull on login (in addition to the systemd updater).
+"$REPO_DIR/scripts/update.sh" >/tmp/slideshow-update.log 2>&1 &
+
+# Launch the kiosk (wraps Chromium in a restart loop).
+exec "$REPO_DIR/scripts/run-kiosk.sh"

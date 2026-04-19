@@ -1,0 +1,8 @@
+{
+  "slides": [
+    { "file": "01-title.html",   "durationMs": 8000 },
+    { "file": "02-what.html",    "durationMs": 8000 },
+    { "file": "03-highlight.html","durationMs": 8000 },
+    { "file": "04-cta.html",     "durationMs": 8000 }
+  ]
+}
