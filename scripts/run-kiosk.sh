@@ -4,7 +4,15 @@
 set -u
 
 REPO_DIR="${REPO_DIR:-$HOME/raspberry-pie-tv}"
-INDEX_URL="file://${REPO_DIR}/index.html"
+# The slideshow is served over localhost by systemd (slideshow-server.service).
+# We go through HTTP (not file://) because Chromium blocks fetch() on file:// URLs.
+SLIDESHOW_URL="${SLIDESHOW_URL:-http://localhost:8080/index.html}"
+
+# Wait for the local server to come up (systemd may not have started it yet).
+for _ in $(seq 1 30); do
+  if curl -fsS -o /dev/null "$SLIDESHOW_URL" 2>/dev/null; then break; fi
+  sleep 1
+done
 
 PROFILE_DIR="$HOME/.config/chromium"
 PREFS="$PROFILE_DIR/Default/Preferences"
@@ -40,6 +48,6 @@ CHROMIUM_FLAGS=(
 )
 
 while true; do
-  "$CHROMIUM_BIN" "${CHROMIUM_FLAGS[@]}" "$INDEX_URL"
+  "$CHROMIUM_BIN" "${CHROMIUM_FLAGS[@]}" "$SLIDESHOW_URL"
   sleep 2
 done

@@ -34,7 +34,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 # chromium-browser exists on Raspberry Pi OS; chromium is the Debian name.
 # Install whichever resolves.
-PKGS=(xserver-xorg x11-xserver-utils xinit openbox unclutter git ca-certificates)
+PKGS=(xserver-xorg x11-xserver-utils xinit openbox unclutter git ca-certificates curl python3)
 if apt-cache show chromium-browser >/dev/null 2>&1; then
   PKGS+=(chromium-browser)
 else
@@ -89,6 +89,13 @@ chmod +x "$REPO_DIR/scripts/install.sh" \
          "$REPO_DIR/scripts/update.sh" \
          "$REPO_DIR/scripts/run-kiosk.sh"
 
+# --- systemd: local static server for the slideshow --------------------
+echo "==> Installing slideshow-server systemd unit"
+sed -e "s|@USER@|$TARGET_USER|g" \
+    -e "s|@REPO_DIR@|$REPO_DIR|g" \
+    "$REPO_DIR/systemd/slideshow-server.service" \
+    >/etc/systemd/system/slideshow-server.service
+
 # --- systemd updater unit + timer --------------------------------------
 echo "==> Installing systemd updater"
 sed -e "s|@USER@|$TARGET_USER|g" \
@@ -100,6 +107,7 @@ install -m 0644 "$REPO_DIR/systemd/slideshow-update.timer" \
   /etc/systemd/system/slideshow-update.timer
 
 systemctl daemon-reload
+systemctl enable --now slideshow-server.service
 systemctl enable slideshow-update.service
 systemctl enable --now slideshow-update.timer
 

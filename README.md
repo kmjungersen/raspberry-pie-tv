@@ -21,6 +21,9 @@ Works on Pi 4 / 5 too.
 - `scripts/run-kiosk.sh` &mdash; launches Chromium in kiosk mode and
   relaunches it if it crashes.
 - `scripts/update.sh` &mdash; `git pull` + reload the browser.
+- `systemd/slideshow-server.service` &mdash; tiny static server on
+  `http://localhost:8080` that serves the repo to the kiosk browser.
+  (Chromium blocks `fetch()` on `file://`, so we go through HTTP.)
 - `systemd/slideshow-update.{service,timer}` &mdash; pulls new slides on
   boot and every hour.
 - `openbox/autostart` &mdash; disables screen blanking, hides the cursor,
