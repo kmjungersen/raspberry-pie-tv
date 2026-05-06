@@ -200,22 +200,131 @@ Keep images under ~2 MB each &mdash; the Pi 3 only has 1 GB of RAM.
 
 ## Troubleshooting
 
-Slideshow didn't start &mdash; SSH in and look at logs:
+Symptoms first &mdash; find the one that matches what you're seeing.
+
+### Black screen / nothing happens after boot
+
+Plug in a USB keyboard and press a key to wake the display. If you
+see a login prompt, the kiosk never started. SSH in and check:
 
 ```sh
-journalctl -u slideshow-update.service --no-pager -n 50
-systemctl status getty@tty1
-cat /tmp/slideshow-update.log   # the Openbox-triggered pull
+systemctl status getty@tty1            # autologin working?
+systemctl --user status                # is openbox even running?
+journalctl --user -b | tail -50        # openbox + autostart errors
 ```
 
-Chromium crashing on startup &mdash; check for the "restore session"
-dialog, which `run-kiosk.sh` clears via `Preferences`. If it persists,
-delete `~/.config/chromium` and reboot.
+Most common cause: `~/.bash_profile` wasn't written by `install.sh`.
+Re-run `sudo ./scripts/install.sh`.
 
-Screen still blanks &mdash; some HDMI monitors ignore DPMS. Set
-`consoleblank=0` in `/boot/firmware/cmdline.txt` and reboot.
+### Slideshow shell loads but slides never appear
 
-Slides won't render &mdash; open Chromium dev tools remotely with
-`--remote-debugging-port=9222` added to `run-kiosk.sh`, then `ssh -L
-9222:localhost:9222` from your laptop and visit
-`http://localhost:9222`.
+Means Chromium is up but `fetch()` is failing. SSH in and check that
+the local HTTP server is alive:
+
+```sh
+systemctl status slideshow-server.service
+curl -fsS http://127.0.0.1:8080/slides/manifest.json
+```
+
+If the server isn't running: `sudo systemctl restart slideshow-server`.
+If it's running but the manifest 404s, a slide file is missing or
+misnamed in `slides/manifest.json`.
+
+### Image is letterboxed, stretched, or wrong resolution
+
+Some TVs only advertise their native resolution after they're on. Pi
+boots first → picks a fallback mode → stuck there.
+
+Fix: power on the TV first, *then* power on the Pi. If that doesn't
+work, force a mode in `/boot/firmware/config.txt`:
+
+```
+hdmi_group=1
+hdmi_mode=16   # 1080p @ 60 Hz
+```
+
+Reboot.
+
+### Screen blanks after ~10 minutes
+
+`run-kiosk.sh` and Openbox autostart already disable DPMS, but some
+HDMI monitors ignore it. Add to `/boot/firmware/cmdline.txt` (single
+line):
+
+```
+consoleblank=0
+```
+
+Reboot.
+
+### Chromium shows "restore session" / "didn't shut down cleanly" banner
+
+`run-kiosk.sh` strips this from `~/.config/chromium/Default/Preferences`
+on every launch. If it keeps coming back, nuke the profile:
+
+```sh
+rm -rf ~/.config/chromium
+sudo reboot
+```
+
+### Slides aren't updating after a `git push`
+
+Either the Pi is offline, or the timer hasn't fired yet. Check both:
+
+```sh
+systemctl status slideshow-update.timer    # next fire time
+journalctl -u slideshow-update.service     # last run output
+```
+
+Force an update immediately:
+
+```sh
+~/raspberry-pie-tv/scripts/update.sh
+```
+
+If `git pull` fails with auth errors, the Pi can't reach GitHub. For
+private repos, set up a deploy key or use HTTPS with a token. For
+captive-portal WiFi, plug in a keyboard, switch to a TTY (`Ctrl+Alt+F2`),
+log in, open the captive portal in a text browser (`sudo apt install
+w3m && w3m http://example.com`), or use a phone hotspot.
+
+### No network at the venue
+
+Not actually a problem. The slideshow runs entirely from local files
+once the Pi has booted. The hourly `git pull` will fail silently and
+the existing slides keep playing.
+
+### Pi reboots randomly / slideshow flickers
+
+Almost always undervoltage. Check:
+
+```sh
+vcgencmd get_throttled       # anything other than 0x0 = power issue
+dmesg | grep -i voltage
+```
+
+Use the official Raspberry Pi power supply, not a random phone
+charger. The Pi 3 needs 2.5 A at 5 V.
+
+### Need to debug Chromium itself
+
+Add `--remote-debugging-port=9222` to `CHROMIUM_FLAGS` in
+`scripts/run-kiosk.sh` and reboot. Then from your laptop:
+
+```sh
+ssh -L 9222:localhost:9222 <user>@<pi>.local
+# open http://localhost:9222 on your laptop
+```
+
+You get full Chrome DevTools attached to the kiosk session.
+
+### "I just want to start over"
+
+```sh
+cd ~/raspberry-pie-tv && git pull
+sudo ./scripts/install.sh    # idempotent, safe to re-run
+sudo reboot
+```
+
+If the Pi itself is wedged, just re-flash the SD card and start from
+"First-time Pi setup" again &mdash; the whole setup is ~10 minutes.
