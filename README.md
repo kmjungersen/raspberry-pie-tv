@@ -31,6 +31,67 @@ Works on Pi 4 / 5 too.
 
 ---
 
+## Local testing (no Pi required)
+
+You can author and preview slides on your laptop before deploying. The
+slideshow is a plain static site, but you **must** serve it over HTTP
+&mdash; Chromium and Firefox both block `fetch()` on `file://`, so opening
+`index.html` directly will load the empty shell and show no slides.
+
+### 1. Serve the repo
+
+Any static file server works. The simplest option (already used by the
+Pi) is Python's built-in:
+
+```sh
+cd raspberry-pie-tv
+python3 -m http.server 8080
+```
+
+Other options if you have them: `npx serve .`, `php -S localhost:8080`,
+`caddy file-server --listen :8080`.
+
+### 2. Open it in a browser
+
+Visit <http://localhost:8080/index.html>. The slideshow should start
+fading through the example slides immediately.
+
+For a TV-sized preview, use your browser's responsive device mode set
+to 1920&times;1080, or just press F11 for fullscreen.
+
+### 3. Verify it actually loads
+
+If something's off, open dev tools &rarr; Network and reload. You
+should see successful (200) requests for:
+
+- `index.html`, `styles.css`, `app.js`
+- `slides/manifest.json`
+- one fetch per slide listed in the manifest
+
+If the manifest 404s, the path is wrong. If a slide 404s, the filename
+in `manifest.json` doesn't match what's in `slides/`.
+
+For a quick scriptable check without a browser:
+
+```sh
+node --input-type=module -e '
+const base = "http://127.0.0.1:8080";
+const m = await (await fetch(base + "/slides/manifest.json")).json();
+for (const s of m.slides) {
+  const r = await fetch(base + "/slides/" + s.file);
+  console.log(r.ok ? "PASS" : "FAIL", s.file, r.status);
+}
+'
+```
+
+### 4. Iterate
+
+Edit slides in `slides/`, save, refresh the browser. No build step, no
+restart. Once you're happy, commit and push &mdash; the Pi will pick it
+up on its next pull.
+
+---
+
 ## First-time Pi setup
 
 ### 1. Flash the SD card
