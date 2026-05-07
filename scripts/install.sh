@@ -64,7 +64,11 @@ ExecStart=
 ExecStart=-/sbin/agetty --autologin $TARGET_USER --noclear %I \$TERM
 EOF
 systemctl daemon-reload
-systemctl restart getty@tty1.service || true
+# Do NOT restart getty@tty1 here. If install.sh is running from the Pi's
+# keyboard (i.e. on tty1), restart kills the current session and aborts
+# the rest of the script (e.g. .bash_profile never gets written). The new
+# autologin config applies on next reboot, which install.sh tells you to
+# do at the end anyway.
 
 # --- ~/.bash_profile: startx on tty1 ------------------------------------
 echo "==> Writing $TARGET_HOME/.bash_profile"
