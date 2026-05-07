@@ -36,22 +36,23 @@ apt-get update -y
 # Install whichever resolves.
 PKGS=(xserver-xorg x11-xserver-utils xinit openbox unclutter git ca-certificates curl python3)
 # Modern Raspberry Pi OS / Debian Bookworm ships `chromium`. Older Pi OS ships
-# `chromium-browser`. Pick whichever has an installable candidate; checking with
-# `apt-cache show` is not enough because transitional package names linger in
-# the cache with Candidate: (none).
-chromium_pkg=""
-for pkg in chromium chromium-browser; do
+# `chromium-browser`. If neither is installable (broken sources, missing
+# raspi.list, etc.), fall back to firefox-esr which is in plain Debian main
+# and runs acceptably as a kiosk on a Pi 3.
+browser_pkg=""
+for pkg in chromium chromium-browser firefox-esr; do
   candidate="$(apt-cache policy "$pkg" 2>/dev/null | awk '/Candidate:/ {print $2}')"
   if [ -n "$candidate" ] && [ "$candidate" != "(none)" ]; then
-    chromium_pkg="$pkg"
+    browser_pkg="$pkg"
     break
   fi
 done
-if [ -z "$chromium_pkg" ]; then
-  echo "ERROR: neither 'chromium' nor 'chromium-browser' is installable. Run 'sudo apt update' and check your sources." >&2
+if [ -z "$browser_pkg" ]; then
+  echo "ERROR: no kiosk-capable browser is installable (tried chromium, chromium-browser, firefox-esr). Run 'sudo apt update' and check your sources." >&2
   exit 1
 fi
-PKGS+=("$chromium_pkg")
+echo "==> Using browser: $browser_pkg"
+PKGS+=("$browser_pkg")
 apt-get install -y --no-install-recommends "${PKGS[@]}"
 
 # --- tty1 autologin -----------------------------------------------------
