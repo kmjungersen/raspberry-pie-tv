@@ -57,7 +57,7 @@ html, body {
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity var(--fade-ms) ease-in-out;
+  transition: opacity var(--fade-ms) ease-in;
   overflow: hidden;
 }
 .slide.visible { opacity: 1; }
@@ -98,6 +98,13 @@ html, body {
   font-weight: 700;
   font-size: clamp(22px, 2.4vw, 40px);
   color: var(--ink);
+}
+.slide .hero .subtagline {
+  margin-top: 0.4em;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(18px, 1.9vw, 30px);
+  color: var(--orange);
 }
 .slide .hero .logo {
   justify-self: center;
@@ -223,6 +230,218 @@ html, body {
   background: var(--body);
 }
 
+/* ==== Icon containers (used in cards and icon rows) ==== */
+.slide .content .icon {
+  width: clamp(44px, 4.4vw, 76px);
+  height: clamp(44px, 4.4vw, 76px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(233, 84, 32, 0.12);
+  color: var(--orange);
+  flex-shrink: 0;
+}
+.slide .content .icon svg {
+  width: 56%;
+  height: 56%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.slide .content .icon.teal {
+  background: rgba(29, 157, 142, 0.12);
+  color: var(--teal);
+}
+
+/* ==== Icon row (3 or 4 column compact layout) ==== */
+.slide .content .icon-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3vw;
+  margin-top: 1.2em;
+}
+.slide .content .icon-row.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.2vw;
+}
+.slide .content .icon-row .feature {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.4vh;
+}
+.slide .content .icon-row .step-num {
+  font-size: clamp(14px, 1.4vw, 20px);
+  color: var(--orange);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+.slide .content .icon-row .feature-label {
+  font-size: clamp(20px, 2.2vw, 36px);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.slide .content .icon-row .feature-body {
+  font-size: clamp(15px, 1.6vw, 22px);
+  color: var(--body);
+  line-height: 1.4;
+}
+
+/* ==== Timeline strip (used under Partner Distributions steps) ==== */
+.slide .content .timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 3vh 12% 0;
+  position: relative;
+}
+.slide .content .timeline::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 9px;
+  right: 9px;
+  height: 3px;
+  background: var(--orange);
+  opacity: 0.35;
+  transform: translateY(-50%);
+}
+.slide .content .timeline .step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--orange);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 5px #fff;
+}
+
+/* ==== Card grid (used on Partner Portal) ==== */
+.slide .content .card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5vw;
+  margin-top: 1em;
+}
+.slide .content .card-grid .card {
+  background: #f4f4f4;
+  border-top: 5px solid var(--orange);
+  padding: 3vh 2.2vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+}
+.slide .content .card-grid .card .icon {
+  margin-bottom: 0.4vh;
+}
+.slide .content .card-grid .card-title {
+  font-size: clamp(18px, 2vw, 30px);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.slide .content .card-grid .card-body {
+  font-size: clamp(15px, 1.6vw, 22px);
+  color: var(--body);
+  line-height: 1.4;
+}
+.slide .content .card-grid .card-note {
+  margin-top: auto;
+  font-size: clamp(13px, 1.3vw, 18px);
+  color: var(--body);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* ==== Rate gap table (used on Exception Rates Manager) ==== */
+.slide .content .rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.6em;
+}
+.slide .content .rate-table th {
+  background: var(--body);
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(13px, 1.3vw, 20px);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 1.2vh 1.5vw;
+  text-align: center;
+}
+.slide .content .rate-table th.accent { color: var(--orange); }
+.slide .content .rate-table td {
+  font-size: clamp(18px, 2vw, 32px);
+  padding: 1.6vh 1.5vw;
+  text-align: center;
+  font-weight: 500;
+  color: var(--ink);
+}
+.slide .content .rate-table tr.row-2019 td { background: #f1f1f1; }
+.slide .content .rate-table tr.row-today td { background: #e6e6e6; }
+.slide .content .rate-table .row-label { font-weight: 700; text-align: left; }
+.slide .content .rate-table .gap-highlight {
+  color: var(--orange);
+  font-weight: 900;
+}
+.slide .content .caption {
+  margin-top: 0.6em;
+  font-size: clamp(14px, 1.4vw, 22px);
+  color: var(--body);
+  font-style: italic;
+}
+.slide .content .callout {
+  margin-top: 0.4em;
+  font-size: clamp(18px, 1.9vw, 30px);
+  font-weight: 700;
+  color: var(--orange);
+  line-height: 1.3;
+}
+
+/* ==== Large text modifier — bumps sizes on roomier white slides ==== */
+.slide .content.large h2 {
+  font-size: clamp(40px, 5vw, 92px);
+}
+.slide .content.large .lede {
+  font-size: clamp(26px, 2.8vw, 50px);
+}
+.slide .content.large .card-grid .card-title {
+  font-size: clamp(22px, 2.4vw, 38px);
+}
+.slide .content.large .card-grid .card-body {
+  font-size: clamp(18px, 1.9vw, 28px);
+}
+.slide .content.large .card-grid .card-note {
+  font-size: clamp(15px, 1.5vw, 22px);
+}
+.slide .content.large .rate-table th {
+  font-size: clamp(15px, 1.5vw, 22px);
+}
+.slide .content.large .rate-table td {
+  font-size: clamp(22px, 2.4vw, 38px);
+}
+.slide .content.large .caption {
+  font-size: clamp(16px, 1.7vw, 26px);
+}
+.slide .content.large .callout {
+  font-size: clamp(22px, 2.2vw, 36px);
+}
+
+#progress {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 5px;
+  width: 0%;
+  background: var(--orange);
+  z-index: 100;
+  pointer-events: none;
+}
+
 #error {
   position: fixed;
   left: 0; right: 0; bottom: 0;
@@ -233,5 +452,6 @@ html, body {
   font-size: 14px;
   display: none;
   white-space: pre-wrap;
+  z-index: 200;
 }
 #error.visible { display: block; }
