@@ -27,6 +27,8 @@ run_chromium() {
 
   local flags=(
     --kiosk
+    --incognito
+    --disk-cache-size=1
     --noerrdialogs
     --disable-infobars
     --disable-session-crashed-bubble
