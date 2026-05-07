@@ -128,9 +128,62 @@ systemctl enable --now slideshow-server.service
 systemctl enable slideshow-update.service
 systemctl enable --now slideshow-update.timer
 
+# --- wifi-connect captive-portal AP fallback ---------------------------
+# When the Pi can't reach a known wifi, raise an AP so a phone can join
+# it, pick the venue's network, and type the password. Saves a keyboard
+# trip to the booth.
+echo "==> Installing wifi-connect AP fallback"
+WC_VERSION="${WC_VERSION:-4.11.84}"
+case "$(uname -m)" in
+  aarch64|arm64) WC_ARCH=aarch64 ;;
+  armv7l|armv6l) WC_ARCH=rpi ;;
+  *) WC_ARCH="" ;;
+esac
+
+if [ -z "$WC_ARCH" ]; then
+  echo "    Skipping wifi-connect: unsupported arch $(uname -m)"
+else
+  # NetworkManager is required (wifi-connect uses it to manage the radio
+  # and persist credentials). Pi OS Bookworm has it by default; on Bullseye
+  # it's available but not active.
+  apt-get install -y --no-install-recommends network-manager
+  systemctl enable --now NetworkManager.service || true
+
+  if [ -x /usr/local/sbin/wifi-connect ]; then
+    echo "    /usr/local/sbin/wifi-connect already present; skipping download"
+  else
+    WC_TARBALL="wifi-connect-v${WC_VERSION}-linux-${WC_ARCH}.tar.gz"
+    WC_URL="https://github.com/balena-os/wifi-connect/releases/download/v${WC_VERSION}/${WC_TARBALL}"
+    TMPDIR=$(mktemp -d)
+    echo "    Downloading $WC_URL"
+    if curl -fsSL "$WC_URL" -o "$TMPDIR/wc.tar.gz"; then
+      tar -xzf "$TMPDIR/wc.tar.gz" -C "$TMPDIR"
+      install -m 0755 "$TMPDIR/wifi-connect" /usr/local/sbin/wifi-connect
+      install -d /usr/local/share/wifi-connect
+      cp -r "$TMPDIR/ui" /usr/local/share/wifi-connect/
+      echo "    Installed wifi-connect v${WC_VERSION} ($WC_ARCH)"
+    else
+      echo "    WARNING: failed to download wifi-connect; AP fallback won't run." >&2
+    fi
+    rm -rf "$TMPDIR"
+  fi
+
+  if [ -x /usr/local/sbin/wifi-connect ]; then
+    chmod +x "$REPO_DIR/scripts/wifi-connect-fallback.sh"
+    sed -e "s|@REPO_DIR@|$REPO_DIR|g" \
+        "$REPO_DIR/systemd/wifi-connect-fallback.service" \
+        >/etc/systemd/system/wifi-connect-fallback.service
+    systemctl daemon-reload
+    systemctl enable --now wifi-connect-fallback.service
+  fi
+fi
+
 # --- mark git repo as safe (systemd runs it as root) --------------------
 git config --system --add safe.directory "$REPO_DIR" || true
 
 echo
 echo "==> Done. Reboot to start the slideshow:"
 echo "    sudo reboot"
+echo
+echo "    If the Pi is offline at next boot, look for a wifi network"
+echo "    called 'SRP-Kiosk-Setup' to configure a new venue's wifi."
