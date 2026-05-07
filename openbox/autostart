@@ -9,8 +9,10 @@ xset -dpms
 # Hide the mouse cursor.
 unclutter -idle 0 -root &
 
-# Best-effort pull on login (in addition to the systemd updater).
-"$REPO_DIR/scripts/update.sh" >/tmp/slideshow-update.log 2>&1 &
+# Pull the latest deck before launching the kiosk so a fresh boot
+# shows current content. update.sh is bounded internally and exits 0
+# on any failure, so an offline boot just falls through quickly.
+"$REPO_DIR/scripts/update.sh" >/tmp/slideshow-update.log 2>&1 || true
 
 # Launch the kiosk (wraps Chromium in a restart loop).
 exec "$REPO_DIR/scripts/run-kiosk.sh"

@@ -13,8 +13,9 @@ fi
 cd "$REPO_DIR" || exit 0
 
 # Fast-forward only; never auto-merge local edits.
-if ! git pull --ff-only --quiet; then
-  echo "git pull failed (offline or non-ff); keeping current slides." >&2
+# Bounded so a dead network doesn't hang us on git's default ~75s TCP timeout.
+if ! timeout 20 git pull --ff-only --quiet; then
+  echo "git pull failed (offline, timed out, or non-ff); keeping current slides." >&2
   exit 0
 fi
 

@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steel Ridge Partners — Momentum 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange:     #E55A18;
+  --teal:       #3CBBA8;
+  --charcoal:   #272727;
+  --gray:       #5A5A5A;
+  --mid-gray:   #7A7A7A;
+  --top-bar:    #D0D0D0;
+  --card-bg:    #F4F4F4;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: 'Barlow', Arial, sans-serif;
+}
+
+/* ═══════════════════════════════════════
+   SLIDESHOW WRAPPER
+═══════════════════════════════════════ */
+.slideshow {
+  position: relative;
+  width: 100%; height: 100%;
+  cursor: pointer;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.75s ease;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ═══════════════════════════════════════
+   ORANGE SLIDES
+═══════════════════════════════════════ */
+.s-orange {
+  background: var(--orange);
+  color: #fff;
+  justify-content: center;
+  padding: 9vh 10vw;
+}
+.s-orange .hook {
+  font-size: clamp(40px, 8vw, 108px);
+  font-weight: 800;
+  line-height: 1.06;
+  margin-bottom: 5vh;
+}
+.s-orange .sub {
+  font-size: clamp(18px, 2.6vw, 40px);
+  font-weight: 600;
+  line-height: 1.3;
+  opacity: 0.93;
+}
+.s-orange .italic-note {
+  font-size: clamp(15px, 1.9vw, 28px);
+  font-style: italic;
+  font-weight: 400;
+  opacity: 0.82;
+  margin-top: 2.5vh;
+}
+.s-orange .proof-list {
+  margin-top: 3vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+}
+.s-orange .proof-list li {
+  font-size: clamp(14px, 1.7vw, 24px);
+  font-weight: 400;
+  opacity: 0.88;
+  list-style: none;
+  padding-left: 1.4vw;
+  position: relative;
+}
+.s-orange .proof-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  opacity: 0.7;
+}
+.s-orange .accent-bar {
+  position: absolute;
+  bottom: 8%;
+  left: 10vw;
+  width: 110px;
+  height: 4px;
+  background: rgba(255,255,255,0.6);
+}
+
+/* Big stat variant */
+.big-stat {
+  font-size: clamp(80px, 15vw, 200px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -3px;
+  margin-bottom: 4vh;
+}
+
+/* ═══════════════════════════════════════
+   TEAL SLIDES
+═══════════════════════════════════════ */
+.s-teal {
+  background: var(--teal);
+  color: #fff;
+  justify-content: center;
+  padding: 9vh 10vw;
+}
+.s-teal .hook {
+  font-size: clamp(36px, 7vw, 96px);
+  font-weight: 800;
+  line-height: 1.06;
+  margin-bottom: 5vh;
+}
+.s-teal .sub {
+  font-size: clamp(18px, 2.4vw, 36px);
+  font-weight: 600;
+  opacity: 0.92;
+  margin-bottom: 2.5vh;
+}
+.s-teal .contact {
+  font-size: clamp(15px, 1.8vw, 28px);
+  font-weight: 400;
+  opacity: 0.85;
+}
+.s-teal .accent-bar {
+  position: absolute;
+  bottom: 8%;
+  left: 10vw;
+  width: 110px;
+  height: 4px;
+  background: rgba(255,255,255,0.6);
+}
+
+/* ═══════════════════════════════════════
+   WHITE SLIDES
+═══════════════════════════════════════ */
+.s-white {
+  background: #fff;
+  color: var(--charcoal);
+}
+
+.s-white .top-bar {
+  height: 7px;
+  background: var(--top-bar);
+  flex-shrink: 0;
+}
+
+.s-white .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 4.5vh 7vw 0;
+  flex-shrink: 0;
+}
+
+.dual-bar {
+  display: flex;
+  height: 5px;
+  width: 150px;
+  margin-bottom: 14px;
+}
+.dual-bar .d-teal   { width: 52px;  background: var(--teal); }
+.dual-bar .d-orange { flex: 1;      background: var(--orange); }
+
+.slide-title {
+  font-size: clamp(24px, 3.8vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--charcoal);
+  max-width: 68%;
+}
+
+.slide-body {
+  padding: 3vh 7vw 4vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5vh;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════
+   LOGO SVG (inline, reused via <use>)
+═══════════════════════════════════════ */
+.logo-wrap {
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════
+   COMPONENT: Rate Gap Table
+═══════════════════════════════════════ */
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.rate-table th {
+  background: var(--gray);
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(11px, 1.25vw, 17px);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 1.3vh 2vw;
+  text-align: center;
+}
+.rate-table th.th-accent { color: var(--orange); }
+.rate-table td {
+  font-size: clamp(14px, 1.7vw, 24px);
+  padding: 1.6vh 2vw;
+  text-align: center;
+  font-weight: 500;
+}
+.rate-table tr.row-2019 td { background: #EEEEEE; color: var(--charcoal); }
+.rate-table tr.row-today td { background: #E2E2E2; color: var(--charcoal); }
+.rate-table .row-label { font-weight: 700; text-align: left; }
+.rate-table .gap-highlight {
+  color: var(--orange);
+  font-weight: 900;
+  font-size: 1.25em;
+}
+.caption-note {
+  font-size: clamp(12px, 1.2vw, 16px);
+  color: var(--mid-gray);
+  font-style: italic;
+}
+.orange-callout {
+  font-size: clamp(14px, 1.7vw, 24px);
+  font-weight: 700;
+  color: var(--orange);
+  line-height: 1.35;
+}
+
+/* ═══════════════════════════════════════
+   COMPONENT: Two-column product layout
+═══════════════════════════════════════ */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 5vw;
+  flex: 1;
+  align-items: start;
+}
+.product-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8vh;
+  padding-right: 3vw;
+  border-right: 3px solid #EBEBEB;
+  height: 100%;
+  justify-content: center;
+}
+.product-name {
+  font-size: clamp(32px, 5.5vw, 78px);
+  font-weight: 900;
+  line-height: 1.0;
+  color: var(--charcoal);
+}
+.product-tag {
+  font-size: clamp(14px, 1.6vw, 22px);
+  font-style: italic;
+  color: var(--orange);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.product-note {
+  font-size: clamp(11px, 1.2vw, 16px);
+  color: var(--mid-gray);
+}
+
+/* Outcome list */
+.outcome-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  justify-content: center;
+  height: 100%;
+}
+.outcome-row {
+  display: flex;
+  gap: 1.5vw;
+  align-items: flex-start;
+}
+.o-dot {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.o-title {
+  font-size: clamp(13px, 1.6vw, 22px);
+  font-weight: 700;
+  color: var(--orange);
+  margin-bottom: 2px;
+}
+.o-body {
+  font-size: clamp(12px, 1.3vw, 17px);
+  color: var(--gray);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════
+   COMPONENT: Card grid (Partner Portal)
+═══════════════════════════════════════ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5vw;
+  flex: 1;
+}
+.card {
+  background: var(--card-bg);
+  border-top: 5px solid var(--orange);
+  padding: 3vh 2vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4vh;
+}
+.card-title {
+  font-size: clamp(15px, 1.8vw, 24px);
+  font-weight: 700;
+  color: var(--charcoal);
+  line-height: 1.2;
+}
+.card-body {
+  font-size: clamp(12px, 1.35vw, 18px);
+  color: var(--gray);
+  line-height: 1.45;
+}
+.card-note {
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: var(--mid-gray);
+  font-style: italic;
+  margin-top: auto;
+}
+
+/* ═══════════════════════════════════════
+   COMPONENT: Social proof two-col
+═══════════════════════════════════════ */
+.proof-layout {
+  display: grid;
+  grid-template-columns: 1fr 3px 1fr;
+  gap: 0 3.5vw;
+  flex: 1;
+  align-items: center;
+}
+.proof-divider { background: var(--teal); height: 75%; align-self: center; }
+.proof-big {
+  font-size: clamp(28px, 5.5vw, 76px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--charcoal);
+}
+.proof-desc {
+  font-size: clamp(13px, 1.4vw, 19px);
+  color: var(--gray);
+  margin-top: 2vh;
+  line-height: 1.5;
+}
+.proof-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+.proof-item { display: flex; gap: 1.2vw; align-items: flex-start; }
+.p-dot {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: var(--teal);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.p-text {
+  font-size: clamp(14px, 1.55vw, 21px);
+  color: var(--charcoal);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* ═══════════════════════════════════════
+   COMPONENT: Aderant stat layout
+═══════════════════════════════════════ */
+.aderant-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5vw;
+  flex: 1;
+  align-items: center;
+}
+.stat-box {
+  background: var(--card-bg);
+  padding: 4vh 3.5vw;
+  text-align: center;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1vh;
+}
+.stat-number {
+  font-size: clamp(72px, 11vw, 150px);
+  font-weight: 900;
+  color: var(--orange);
+  line-height: 0.9;
+}
+.stat-label {
+  font-size: clamp(14px, 1.7vw, 22px);
+  font-weight: 700;
+  color: var(--charcoal);
+  line-height: 1.3;
+}
+.aderant-points {
+  display: flex;
+  flex-direction: column;
+  gap: 2.8vh;
+}
+
+/* ═══════════════════════════════════════
+   PROGRESS BAR + COUNTER
+═══════════════════════════════════════ */
+#progress {
+  position: fixed;
+  bottom: 0; left: 0;
+  height: 4px;
+  background: var(--orange);
+  width: 0%;
+  z-index: 200;
+  transition: width linear;
+}
+#counter {
+  position: fixed;
+  bottom: 10px; right: 16px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.4);
+  z-index: 200;
+  font-family: 'Barlow', sans-serif;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Reusable SVG logo symbol ─────────────────────── -->
+<!-- All polygon vertices verified inside circle r=46 at (55,50) — no clipPath needed -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden">
+  <defs>
+    <symbol id="srp-logo" viewBox="0 0 110 130">
+      <!-- Circle background: center(55,50) r=46 -->
+      <circle cx="55" cy="50" r="46" fill="#5A5A5A"/>
+      <!-- Left peak  — vertices: (18,72)(34,30)(52,72) all inside circle -->
+      <polygon points="18,72 34,30 52,72" fill="#A0A0A0"/>
+      <!-- Middle peak — vertices: (30,72)(55,6)(80,72) — (55,6): d²=1936<2116 ✓ -->
+      <polygon points="30,72 55,6 80,72" fill="#D2D2D2"/>
+      <!-- Right peak  — vertices: (58,72)(76,34)(92,72) — (92,72): d²=1853<2116 ✓ -->
+      <polygon points="58,72 76,34 92,72" fill="#B8B8B8"/>
+      <!-- Company name -->
+      <text x="55" y="112" text-anchor="middle"
+            font-family="Barlow, Arial, sans-serif"
+            font-size="12.5" font-weight="700" fill="#5A5A5A"
+            letter-spacing="2">STEEL RIDGE</text>
+      <text x="55" y="127" text-anchor="middle"
+            font-family="Barlow, Arial, sans-serif"
+            font-size="10.5" font-weight="400" fill="#888888"
+            letter-spacing="1.5">PARTNERS</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="slideshow" id="deck">
+
+  <!-- ── SLIDE 1: Hook (Orange) ─────────────────────── -->
+  <div class="slide s-orange active" id="s1">
+    <h1 class="hook">Your firm is<br>losing revenue.</h1>
+    <p class="sub">We can prove it in 30 minutes.</p>
+    <div class="accent-bar"></div>
+  </div>
+
+  <!-- ── SLIDE 2: $20B+ Stat (Orange) ─────────────── -->
+  <div class="slide s-orange" id="s2">
+    <div class="big-stat">$20B+</div>
+    <p class="sub">lost every year by law firms<br>to unmanaged exception rates</p>
+    <p class="italic-note">Does your firm know its number?</p>
+    <div class="accent-bar"></div>
+  </div>
+
+  <!-- ── SLIDE 3: Rate Gap (White) ─────────────────── -->
+  <div class="slide s-white" id="s3">
+    <div class="top-bar"></div>
+    <div class="header">
+      <div>
+        <div class="dual-bar"><div class="d-teal"></div><div class="d-orange"></div></div>
+        <h2 class="slide-title">The rate didn't change.<br>The cost did.</h2>
+      </div>
+      <div class="logo-wrap">
+        <svg width="100" height="118"><use href="#srp-logo"/></svg>
+      </div>
+    </div>
+    <div class="slide-body">
+      <table class="rate-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="th-accent">EXCEPTION RATE</th>
+            <th class="th-accent">STANDARD RATE</th>
+            <th class="th-accent">GAP / HOUR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-2019">
+            <td class="row-label">2019</td>
+            <td>$850/hr</td>
+            <td>$950/hr</td>
+            <td>$100/hr</td>
+          </tr>
+          <tr class="row-today">
+            <td class="row-label">TODAY</td>
+            <td>$850/hr</td>
+            <td>$1,400/hr</td>
+            <td class="gap-highlight">$550/hr</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="caption-note">Standard rates grow ~10% per year. Exception rates rarely follow.</p>
+      <p class="orange-callout">Rates Manager shows every firm exactly what it's absorbing — in real time.</p>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: Rates Manager (White) ─────────────── -->
+  <div class="slide s-white" id="s4">
+    <div class="top-bar"></div>
+    <div class="header">
+      <div>
+        <div class="dual-bar"><div class="d-teal"></div><div class="d-orange"></div></div>
+        <h2 class="slide-title">Rates Manager</h2>
+      </div>
+      <div class="logo-wrap">
+        <svg width="100" height="118"><use href="#srp-logo"/></svg>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div class="product-left">
+          <div class="product-name">RATES<br>MANAGER</div>
+          <div class="product-tag">Stop the bleed.<br>Recover what's yours.</div>
+          <div class="product-note">Typical payback: under 6 months</div>
+        </div>
+        <div class="outcome-list">
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">CLARITY</div>
+              <div class="o-body">Every exception rate and its real dollar impact — visible to everyone.</div>
+            </div>
+          </div>
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">CONTROL</div>
+              <div class="o-body">Streamlined process. No more chasing decisions through email.</div>
+            </div>
+          </div>
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">CONFIDENCE</div>
+              <div class="o-body">Attorneys and pricing work from the same data, in real time.</div>
+            </div>
+          </div>
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">ROI</div>
+              <div class="o-body">Firms recover meaningful revenue in year one. Every year after that too.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: Partner Portal (White) ─────────────── -->
+  <div class="slide s-white" id="s5">
+    <div class="top-bar"></div>
+    <div class="header">
+      <div>
+        <div class="dual-bar"><div class="d-teal"></div><div class="d-orange"></div></div>
+        <h2 class="slide-title">Partner Portal</h2>
+      </div>
+      <div class="logo-wrap">
+        <svg width="100" height="118"><use href="#srp-logo"/></svg>
+      </div>
+    </div>
+    <div class="slide-body">
+      <p class="orange-callout" style="font-style:italic;font-weight:600;">
+        "Online banking for your firm's partners."
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">Equity Accounts</div>
+          <div class="card-body">Live balances &amp; full transaction history. Like checking your bank balance — for firm equity.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Withdrawal Requests</div>
+          <div class="card-body">Self-service approval workflows. No manual AP intervention required.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Comp Statements</div>
+          <div class="card-body">Built and delivered digitally. No PDFs, no mail merges, no printing.</div>
+          <div class="card-note">Blockchain-backed equity ledger · Aderant-native</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6: Custom Dev (Orange) ───────────────── -->
+  <div class="slide s-orange" id="s6">
+    <h1 class="hook" style="font-size:clamp(36px,7.5vw,106px);">If the tool<br>doesn't exist —<br>we build it.</h1>
+    <ul class="proof-list">
+      <li>Partner Portal &nbsp;·&nbsp; Partner Distributions &nbsp;·&nbsp; Rates Manager &nbsp;·&nbsp; Rocket Prebill</li>
+      <li style="margin-top:0.5vh;font-weight:600;opacity:0.95;">All in active production. All at AmLaw firms.</li>
+    </ul>
+    <div class="accent-bar"></div>
+  </div>
+
+  <!-- ── SLIDE 7: Social Proof (White) ──────────────── -->
+  <div class="slide s-white" id="s7">
+    <div class="top-bar"></div>
+    <div class="header">
+      <div>
+        <div class="dual-bar"><div class="d-teal"></div><div class="d-orange"></div></div>
+        <h2 class="slide-title">Production-proven.<br>Not a demo.</h2>
+      </div>
+      <div class="logo-wrap">
+        <svg width="100" height="118"><use href="#srp-logo"/></svg>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div class="proof-layout">
+        <div>
+          <div class="proof-big">Not a demo.<br>Not a<br>prototype.</div>
+          <div class="proof-desc">Every product we sell is in active production at law firms today.</div>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-items">
+          <div class="proof-item">
+            <div class="p-dot"></div>
+            <div class="p-text">Rates Manager — live at AmLaw firms</div>
+          </div>
+          <div class="proof-item">
+            <div class="p-dot"></div>
+            <div class="p-text">Partner Portal — live at AmLaw firms</div>
+          </div>
+          <div class="proof-item">
+            <div class="p-dot"></div>
+            <div class="p-text">Partner Distributions — Davis Polk, in production</div>
+          </div>
+          <div class="proof-item">
+            <div class="p-dot"></div>
+            <div class="p-text">Rocket Prebill — Aderant-native prebilling</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: Aderant Expertise (White) ─────────── -->
+  <div class="slide s-white" id="s8">
+    <div class="top-bar"></div>
+    <div class="header">
+      <div>
+        <div class="dual-bar"><div class="d-teal"></div><div class="d-orange"></div></div>
+        <h2 class="slide-title">Deep Aderant Expertise</h2>
+      </div>
+      <div class="logo-wrap">
+        <svg width="100" height="118"><use href="#srp-logo"/></svg>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div class="aderant-layout">
+        <div class="stat-box">
+          <div class="stat-number">~10</div>
+          <div class="stat-label">years of<br>Aderant<br>expertise</div>
+        </div>
+        <div class="aderant-points">
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">Deep API Access</div>
+              <div class="o-body">We know the data models and environments inside and out.</div>
+            </div>
+          </div>
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">Native Integration</div>
+              <div class="o-body">No middleware hacks. Clean, direct Aderant integration.</div>
+            </div>
+          </div>
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">All Environments</div>
+              <div class="o-body">Sierra &nbsp;·&nbsp; Stridyn &nbsp;·&nbsp; On-premise</div>
+            </div>
+          </div>
+          <div class="outcome-row">
+            <div class="o-dot"></div>
+            <div>
+              <div class="o-title">We Extend Aderant</div>
+              <div class="o-body">Where it stops, we build the bridge — using your existing data.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 9: CTA (Teal) ─────────────────────────── -->
+  <div class="slide s-teal" id="s9">
+    <h1 class="hook">Come find out what<br>your firm is leaving<br>on the table.</h1>
+    <p class="sub">30 minutes. Live demo. Your firm's data.</p>
+    <p class="contact">steelridge.io &nbsp;·&nbsp; sales@steelridge.io</p>
+    <div class="accent-bar"></div>
+  </div>
+
+</div><!-- /deck -->
+
+<div id="progress"></div>
+<div id="counter">1 / 9</div>
+
+<script>
+(function () {
+  const SLIDE_DURATION = 8000; // ms per slide
+  const TRANSITION    = 750;   // ms fade
+
+  const slides  = Array.from(document.querySelectorAll('.slide'));
+  const total   = slides.length;
+  const bar     = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+
+  let current = 0;
+  let timer   = null;
+  let barTimer = null;
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    current = ((index % total) + total) % total;
+    slides[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + total;
+    startProgress();
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  function startProgress() {
+    clearTimeout(timer);
+    clearInterval(barTimer);
+
+    // Reset bar
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+
+    // Force reflow
+    bar.getBoundingClientRect();
+
+    // Animate bar over SLIDE_DURATION
+    bar.style.transition = 'width ' + SLIDE_DURATION + 'ms linear';
+    bar.style.width = '100%';
+
+    // Advance slide when done
+    timer = setTimeout(next, SLIDE_DURATION);
+  }
+
+  // Keyboard nav
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); prev();
+    } else if (e.key === 'f' || e.key === 'F') {
+      // Toggle fullscreen
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  });
+
+  // Click to advance
+  document.getElementById('deck').addEventListener('click', function () {
+    next();
+  });
+
+  // Start
+  startProgress();
+})();
+</script>
+</body>
+</html>
