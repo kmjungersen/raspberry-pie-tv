@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=@USER@
 WorkingDirectory=@REPO_DIR@
-ExecStart=/usr/bin/python3 -m http.server 8080 --bind 127.0.0.1
+ExecStart=/usr/bin/python3 @REPO_DIR@/scripts/server.py 8080 --bind 127.0.0.1
 Restart=always
 RestartSec=2
 
