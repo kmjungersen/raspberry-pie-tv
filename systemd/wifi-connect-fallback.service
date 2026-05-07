@@ -1,0 +1,14 @@
+[Unit]
+Description=Raise a captive-portal AP when the Pi has no wifi
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+# wifi-connect needs root to manage the radio and bind :80.
+Type=simple
+ExecStart=@REPO_DIR@/scripts/wifi-connect-fallback.sh
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

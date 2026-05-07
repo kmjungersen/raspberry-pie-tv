@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Pre-seed NetworkManager profiles on the Pi.
+#
+# Copy this file to wifi-networks.local.sh and put your real SSIDs +
+# passwords in. The .local copy is gitignored, so credentials stay on
+# this machine. install.sh sources it (if it exists) and creates an
+# autoconnect=yes profile for each entry, so the Pi tries to join any
+# of these networks on boot.
+#
+# Higher priority wins when multiple known networks are visible at once.
+# Defaults to 50 if you omit it.
+#
+#   add_wifi <ssid> <password> [priority]
+
+# add_wifi "Kurtis's iPhone" "REPLACE_ME" 60
+# add_wifi "Office" "REPLACE_ME" 40

@@ -27,9 +27,10 @@ getty@tty1 (autologin)
   → run-kiosk.sh (waits for HTTP server, then while-true loop on chromium)
 ```
 
-In parallel, two systemd units run as the target user:
-- `slideshow-server.service` &mdash; `python3 -m http.server 8080` bound to 127.0.0.1, serving the repo. The kiosk hits `http://localhost:8080/index.html`.
+In parallel, three systemd units run:
+- `slideshow-server.service` &mdash; `python3 scripts/server.py 8080` bound to 127.0.0.1, serving the repo with `Cache-Control: no-store` so deploys land instantly. The kiosk hits `http://localhost:8080/index.html`.
 - `slideshow-update.service` + `.timer` &mdash; `git pull --ff-only` on boot and every hour.
+- `wifi-connect-fallback.service` &mdash; watchdog that runs balena-os/wifi-connect when the Pi has no network, raising a captive-portal AP (default SSID `SRP-Kiosk-Setup`) so a phone can configure a new venue's wifi without a keyboard.
 
 ### Two architectural pitfalls to avoid
 
@@ -86,3 +87,11 @@ Images go in `slides/assets/` and are referenced as `assets/foo.png` from inside
 - Chromium kiosk flags &mdash; `CHROMIUM_FLAGS` in `scripts/run-kiosk.sh`
 - Update frequency &mdash; `OnUnitActiveSec=` in `systemd/slideshow-update.timer`
 - Packages installed on the Pi &mdash; `PKGS=(...)` in `scripts/install.sh`
+- Captive-portal AP SSID + activity timeout &mdash; env vars at the top of `scripts/wifi-connect-fallback.sh`
+- Pre-seeded wifi networks (phone hotspot, home wifi) &mdash; `wifi-networks.local.sh` (copy from the `.example`; gitignored). Sourced by `install.sh`, which creates autoconnect=yes NetworkManager profiles for each `add_wifi` entry.
+
+## Branch naming
+
+The Pi's deployment branch is `main` &mdash; everything else exists to PR into it.
+
+When opening branches that will become PRs, use a descriptive `<scope>/<short-description>` name: `feat/wifi-connect-fallback`, `fix/loop-flash`, `docs/branch-naming`. **Don't push the auto-generated `claude/<words-hash>` worktree branch names** &mdash; create a fresh, descriptive branch (`git checkout -b feat/whatever origin/main`) and push that instead. PR titles are easier to scan, and old auto-named branches don't clutter the remote.
