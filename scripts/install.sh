@@ -35,11 +35,23 @@ apt-get update -y
 # chromium-browser exists on Raspberry Pi OS; chromium is the Debian name.
 # Install whichever resolves.
 PKGS=(xserver-xorg x11-xserver-utils xinit openbox unclutter git ca-certificates curl python3)
-if apt-cache show chromium-browser >/dev/null 2>&1; then
-  PKGS+=(chromium-browser)
-else
-  PKGS+=(chromium)
+# Modern Raspberry Pi OS / Debian Bookworm ships `chromium`. Older Pi OS ships
+# `chromium-browser`. Pick whichever has an installable candidate; checking with
+# `apt-cache show` is not enough because transitional package names linger in
+# the cache with Candidate: (none).
+chromium_pkg=""
+for pkg in chromium chromium-browser; do
+  candidate="$(apt-cache policy "$pkg" 2>/dev/null | awk '/Candidate:/ {print $2}')"
+  if [ -n "$candidate" ] && [ "$candidate" != "(none)" ]; then
+    chromium_pkg="$pkg"
+    break
+  fi
+done
+if [ -z "$chromium_pkg" ]; then
+  echo "ERROR: neither 'chromium' nor 'chromium-browser' is installable. Run 'sudo apt update' and check your sources." >&2
+  exit 1
 fi
+PKGS+=("$chromium_pkg")
 apt-get install -y --no-install-recommends "${PKGS[@]}"
 
 # --- tty1 autologin -----------------------------------------------------
