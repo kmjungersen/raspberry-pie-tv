@@ -178,6 +178,39 @@ else
   fi
 fi
 
+# --- pre-seed wifi networks from local config (if any) -----------------
+# Lets the Pi auto-connect to known networks (phone hotspot, home wifi,
+# etc.) on boot. Credentials live in wifi-networks.local.sh which is
+# gitignored, so they stay on the operator's machine.
+add_wifi() {
+  local ssid="$1" psk="$2" priority="${3:-50}"
+  if [ -z "$ssid" ] || [ -z "$psk" ]; then
+    echo "    SKIP: add_wifi needs both ssid and psk" >&2
+    return 1
+  fi
+  echo "    pre-seeding: $ssid (priority $priority)"
+  nmcli connection delete "$ssid" >/dev/null 2>&1 || true
+  nmcli connection add \
+    type wifi \
+    con-name "$ssid" \
+    ssid "$ssid" \
+    wifi-sec.key-mgmt wpa-psk \
+    wifi-sec.psk "$psk" \
+    connection.autoconnect yes \
+    connection.autoconnect-priority "$priority" \
+    >/dev/null
+}
+
+if [ -f "$REPO_DIR/wifi-networks.local.sh" ]; then
+  if command -v nmcli >/dev/null 2>&1; then
+    echo "==> Pre-seeding wifi networks from wifi-networks.local.sh"
+    # shellcheck source=/dev/null
+    . "$REPO_DIR/wifi-networks.local.sh"
+  else
+    echo "==> wifi-networks.local.sh found but nmcli is missing; skipping pre-seed" >&2
+  fi
+fi
+
 # --- mark git repo as safe (systemd runs it as root) --------------------
 git config --system --add safe.directory "$REPO_DIR" || true
 

@@ -88,6 +88,7 @@ Images go in `slides/assets/` and are referenced as `assets/foo.png` from inside
 - Update frequency &mdash; `OnUnitActiveSec=` in `systemd/slideshow-update.timer`
 - Packages installed on the Pi &mdash; `PKGS=(...)` in `scripts/install.sh`
 - Captive-portal AP SSID + activity timeout &mdash; env vars at the top of `scripts/wifi-connect-fallback.sh`
+- Pre-seeded wifi networks (phone hotspot, home wifi) &mdash; `wifi-networks.local.sh` (copy from the `.example`; gitignored). Sourced by `install.sh`, which creates autoconnect=yes NetworkManager profiles for each `add_wifi` entry.
 
 ## Branch naming
 
