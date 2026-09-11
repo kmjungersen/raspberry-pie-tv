@@ -1,31 +1,36 @@
 <div class="content large">
   <div class="accent-bars"><span class="t"></span><span class="o"></span></div>
-  <h2>Exception Rates Manager</h2>
-  <p class="lede">The rate didn&rsquo;t change. The cost did.</p>
-  <table class="rate-table">
-    <thead>
-      <tr>
-        <th></th>
-        <th class="accent">Exception Rate</th>
-        <th class="accent">Standard Rate</th>
-        <th class="accent">Gap / Hour</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="row-2019">
-        <td class="row-label">2019</td>
-        <td>$850/hr</td>
-        <td>$950/hr</td>
-        <td>$100/hr</td>
-      </tr>
-      <tr class="row-today">
-        <td class="row-label">Today</td>
-        <td>$850/hr</td>
-        <td>$1,400/hr</td>
-        <td class="gap-highlight">$550/hr</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="caption">Standard rates grow ~10% per year. Exception rates rarely follow.</p>
-  <p class="callout">See exactly what your firm is absorbing &mdash; in real time.</p>
+  <h2 data-reveal style="--i:0">Exception Rates Manager</h2>
+  <p class="lede" data-reveal style="--i:1">The rate didn&rsquo;t change. The cost did.</p>
+
+  <div class="rate-viz">
+    <div class="rate-chart">
+      <div class="year" data-reveal="fade" style="--i:3">2019</div>
+      <div class="lbl" data-reveal="fade" style="--i:4">Exception</div>
+      <div class="track"><div class="bar ex" style="--v:850; --d:700ms"></div></div>
+      <div class="val" data-reveal="fade" style="--i:4">$850</div>
+
+      <div class="lbl" data-reveal="fade" style="--i:5">Standard</div>
+      <div class="track"><div class="bar" style="--v:950; --d:900ms"></div><div class="gap" style="--v:950; --d:1500ms"></div></div>
+      <div class="val" data-reveal="fade" style="--i:5">$950</div>
+
+      <div class="year" data-reveal="fade" style="--i:7">Today</div>
+      <div class="lbl" data-reveal="fade" style="--i:8">Exception</div>
+      <div class="track"><div class="bar ex" style="--v:850; --d:1200ms"></div></div>
+      <div class="val" data-reveal="fade" style="--i:8">$850</div>
+
+      <div class="lbl" data-reveal="fade" style="--i:9">Standard</div>
+      <div class="track"><div class="bar" style="--v:1400; --d:1400ms"></div><div class="gap" style="--v:1400; --d:2100ms"></div></div>
+      <div class="val hot" data-reveal="fade" style="--i:9"><span data-count="1400" data-count-from="950" data-prefix="$" data-count-delay="2100" data-count-duration="800">$950</span></div>
+    </div>
+
+    <div class="gap-panel" data-reveal="scale" style="--i:2; --d:700ms">
+      <div class="k">Gap per hour, today</div>
+      <div class="big"><span data-count="550" data-count-from="100" data-prefix="$" data-count-delay="2100" data-count-duration="1000">$100</span><small>/hr</small></div>
+      <div class="was">In 2019 it was <b>$100/hr</b>. Same exception rate.</div>
+    </div>
+  </div>
+
+  <p class="caption" data-reveal style="--i:0; --d:3300ms">Every year the gap widens. Most firms can&rsquo;t see it until year-end.</p>
+  <p class="callout" data-reveal style="--i:0; --d:3700ms">See exactly what your firm is absorbing &mdash; in real time.</p>
 </div>

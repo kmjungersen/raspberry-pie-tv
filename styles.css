@@ -61,11 +61,14 @@ html, body {
   overflow: hidden;
 }
 .slide.visible { opacity: 1; }
+.slide.no-fade { transition: none; }
 
 /* ==== Hero (slide 1) ==== */
 .slide .hero {
   width: 100%;
   height: 100%;
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   align-items: center;
@@ -86,7 +89,7 @@ html, body {
 .slide .hero .accent-bars .t { background: var(--teal); }
 .slide .hero .accent-bars .o { background: var(--orange); }
 .slide .hero h1 {
-  font-size: clamp(40px, 5.4vw, 96px);
+  font-size: clamp(38px, 4.9vw, 88px);
   line-height: 1.05;
   margin: 0;
   font-weight: 900;
@@ -117,6 +120,8 @@ html, body {
 .slide .divider {
   width: 100%;
   height: 100%;
+  position: relative;
+  isolation: isolate;
   padding: 10vh 9vw;
   display: flex;
   flex-direction: column;
@@ -154,6 +159,7 @@ html, body {
   width: 100%;
   height: 100%;
   position: relative;
+  isolation: isolate;
   background: var(--bg);
   padding: 14vh 9vw 8vh;
 }
@@ -455,3 +461,288 @@ html, body {
   z-index: 200;
 }
 #error.visible { display: block; }
+
+
+/* =====================================================================
+   V2 MOTION SYSTEM
+   Rules for the Pi 3: animate only transform, opacity, stroke-dashoffset.
+   No filter, no blur, no animated box-shadow.
+   ===================================================================== */
+
+/* ---- Hero extras (LVNx line + slow logo drift) ---- */
+.slide .hero .event {
+  margin-top: 1.6em;
+  display: inline-block;
+  font-size: clamp(16px, 1.5vw, 26px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  border-left: 5px solid var(--teal);
+  padding-left: 0.8em;
+}
+.slide.in .hero .logo {
+  /* reveal first, then a slow drift for the rest of the dwell */
+  animation:
+    reveal-scale 680ms cubic-bezier(0.2, 0.7, 0.2, 1) both,
+    logo-drift 11s ease-in-out forwards;
+  animation-delay: 220ms, 900ms;
+}
+@keyframes logo-drift {
+  from { transform: scale(1) translateY(0); }
+  to   { transform: scale(1.05) translateY(-1vh); }
+}
+
+/* ---- Divider extras ---- */
+.slide .divider .event {
+  margin-top: 1.4em;
+  font-size: clamp(16px, 1.6vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.slide .divider .contact {
+  line-height: 1.6;
+}
+
+/* ---- Ambient background: two slow-drifting soft discs, transform only ---- */
+.slide .ambient {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.slide .ambient i {
+  position: absolute;
+  display: block;
+  width: 64vw;
+  height: 64vw;
+  border-radius: 50%;
+  will-change: transform;
+}
+.slide .ambient i:nth-child(1) {
+  left: -22vw;
+  top: -30vw;
+  background: radial-gradient(circle, rgba(29, 157, 142, 0.16) 0%, rgba(29, 157, 142, 0) 62%);
+  animation: drift-a 28s ease-in-out infinite alternate;
+}
+.slide .ambient i:nth-child(2) {
+  right: -26vw;
+  bottom: -34vw;
+  background: radial-gradient(circle, rgba(233, 84, 32, 0.14) 0%, rgba(233, 84, 32, 0) 62%);
+  animation: drift-b 34s ease-in-out infinite alternate;
+}
+/* On colored dividers the discs become a soft white sheen instead. */
+.slide .divider .ambient i:nth-child(1) {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 62%);
+}
+.slide .divider .ambient i:nth-child(2) {
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0) 62%);
+}
+@keyframes drift-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(9vw, 7vw, 0) scale(1.12); }
+}
+@keyframes drift-b {
+  from { transform: translate3d(0, 0, 0) scale(1.08); }
+  to   { transform: translate3d(-10vw, -8vw, 0) scale(0.96); }
+}
+
+/* ---- Reveal choreography ----
+   Mark an element with data-reveal and stagger it with --i (index) and
+   optional --d (extra delay). CSS keyed on .slide.in runs the keyframe.  */
+.slide [data-reveal] { opacity: 0; }
+.slide.in [data-reveal] {
+  animation: reveal-rise 680ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms + var(--d, 0ms));
+}
+.slide.in [data-reveal="left"]  { animation-name: reveal-left; }
+.slide.in [data-reveal="scale"] { animation-name: reveal-scale; }
+.slide.in [data-reveal="fade"]  { animation-name: reveal-fade; }
+.slide.in [data-reveal="bar"]   {
+  animation-name: reveal-bar;
+  animation-duration: 560ms;
+  transform-origin: left center;
+}
+@keyframes reveal-rise  { from { opacity: 0; transform: translate3d(0, 28px, 0); } to { opacity: 1; transform: none; } }
+@keyframes reveal-left  { from { opacity: 0; transform: translate3d(-36px, 0, 0); } to { opacity: 1; transform: none; } }
+@keyframes reveal-scale { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: none; } }
+@keyframes reveal-fade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes reveal-bar   { from { opacity: 1; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+
+/* Accent bars and divider rules grow in from the left. */
+.slide .accent-bars span { transform-origin: left center; }
+.slide.in .accent-bars span {
+  animation: reveal-bar 560ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.slide.in .accent-bars span.o { animation-delay: 140ms; }
+.slide .divider .rule { transform-origin: left center; transform: scaleX(0); }
+.slide.in .divider .rule {
+  animation: reveal-bar 620ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: 420ms;
+}
+
+/* ---- SVG icon draw-in (pathLength="1" is set by app.js) ---- */
+.slide .icon svg * {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.slide.in .icon svg * {
+  animation: draw 900ms ease-out forwards;
+  animation-delay: calc(var(--i, 0) * 110ms + var(--d, 0ms) + 260ms);
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* ---- Timeline (Partner Distributions): line draws, dots pop in sequence ---- */
+.slide .timeline::before { transform: translateY(-50%) scaleX(0); transform-origin: left center; }
+.slide.in .timeline::before {
+  animation: timeline-line 1100ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: 300ms;
+}
+@keyframes timeline-line { to { transform: translateY(-50%) scaleX(1); } }
+.slide .timeline .step-dot { transform: scale(0); }
+.slide.in .timeline .step-dot {
+  animation: dot-pop 420ms cubic-bezier(0.3, 1.4, 0.5, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 260ms + 380ms);
+}
+@keyframes dot-pop { to { transform: scale(1); } }
+
+/* ---- Wipe overlay ---- */
+#wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  transform: translateX(-100%);
+  pointer-events: none;
+  will-change: transform;
+}
+#wipe.wipe-orange { background: var(--orange); }
+#wipe.wipe-teal   { background: var(--teal); }
+#wipe.wipe-ink    { background: var(--ink); }
+
+/* =====================================================================
+   RATE GAP VISUALIZATION (Exception Rates Manager hero)
+   ===================================================================== */
+.slide .content .rate-viz {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 4vw;
+  align-items: stretch;
+  margin-top: 0.9em;
+}
+.slide .content .rate-chart {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  column-gap: 1.6vw;
+  row-gap: 1.8vh;
+  align-items: center;
+}
+.slide .content .rate-chart .year {
+  grid-column: 1 / -1;
+  font-size: clamp(16px, 1.6vw, 26px);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-top: 2.2vh;
+}
+.slide .content .rate-chart .year:first-child { margin-top: 0; }
+.slide .content .rate-chart .lbl {
+  font-size: clamp(20px, 2.1vw, 34px);
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.slide .content .rate-chart .track {
+  position: relative;
+  height: clamp(34px, 5.2vh, 62px);
+  background: #f1f1f1;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.slide .content .rate-chart .bar,
+.slide .content .rate-chart .gap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--v) / 1400 * 100%);
+  background: var(--teal);
+  border-radius: 3px;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.slide .content .rate-chart .bar.ex { background: var(--body); }
+.slide .content .rate-chart .gap {
+  left: calc(850 / 1400 * 100%);
+  width: calc((var(--v) - 850) / 1400 * 100%);
+  background: var(--orange);
+  border-radius: 0 3px 3px 0;
+}
+.slide.in .rate-chart .bar {
+  animation: bar-grow 900ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+.slide.in .rate-chart .gap {
+  animation: bar-grow 800ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes bar-grow { to { transform: scaleX(1); } }
+.slide .content .rate-chart .val {
+  font-size: clamp(22px, 2.5vw, 40px);
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 5.2ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.slide .content .rate-chart .val.hot { color: var(--orange); font-weight: 900; }
+
+.slide .content .gap-panel {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 6px;
+  padding: 3.2vh 2.4vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.6vh;
+}
+.slide .content .gap-panel .k {
+  font-size: clamp(14px, 1.4vw, 22px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.slide .content .gap-panel .big {
+  font-size: clamp(64px, 8.2vw, 150px);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--orange);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.slide .content .gap-panel .big small {
+  font-size: 0.34em;
+  font-weight: 700;
+  color: #fff;
+  opacity: 0.8;
+  margin-left: 0.15em;
+}
+.slide.in .gap-panel .big {
+  animation: gap-pulse 900ms ease-out both;
+  animation-delay: 3100ms;
+}
+@keyframes gap-pulse {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.slide .content .gap-panel .was {
+  font-size: clamp(18px, 1.8vw, 28px);
+  opacity: 0.8;
+}
+.slide .content .gap-panel .was b { color: var(--teal); }

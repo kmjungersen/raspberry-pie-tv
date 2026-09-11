@@ -150,22 +150,31 @@ Unplug, replug. On boot it runs `git pull` before the browser starts.
 
 ## Authoring slides
 
-Each slide is an HTML fragment in `slides/`. The root styles in
-`styles.css` provide `h1`, `h2`, `p`, `ul` sized for a 1080p TV plus a
-few helpers:
+Each slide is an HTML fragment in `slides/`. `styles.css` provides three
+slide roots sized for a 1080p TV &mdash; `.content` (white, top bar, logo),
+`.divider` (full-bleed orange, add `.teal` for teal), and `.hero` (title)
+&mdash; plus `.card-grid`, `.icon-row`, and `.rate-viz` layouts. Copy an
+existing slide as a starting point.
 
-- `.stack` &mdash; vertical flex column with gap
-- `.center` &mdash; center-aligned text
-- `.accent` &mdash; colored (orange by default, change in `styles.css`)
-
-Example:
+Motion is declared in the markup. Add `data-reveal` to anything that should
+animate in and stagger it with `--i`:
 
 ```html
-<div class="stack center">
-  <h1>Hello <span class="accent">World</span></h1>
-  <p>Subtitle here</p>
+<div class="content">
+  <div class="accent-bars"><span class="t"></span><span class="o"></span></div>
+  <h2 data-reveal style="--i:0">Hello</h2>
+  <p class="lede" data-reveal style="--i:1">Subtitle here</p>
+  <div class="card-grid">
+    <div class="card" data-reveal style="--i:2">…</div>
+    <div class="card" data-reveal style="--i:3">…</div>
+  </div>
 </div>
 ```
+
+Variants: `data-reveal="left"`, `"scale"`, `"fade"`, `"bar"`. Add `--d:400ms`
+for extra delay. Numbers can count up with `data-count` (see
+`slides/07-case-exception-rates.html`). SVG icons inside `.icon` stroke-draw
+on their own.
 
 Register the slide in `slides/manifest.json`:
 
@@ -173,10 +182,17 @@ Register the slide in `slides/manifest.json`:
 {
   "slides": [
     { "file": "01-title.html",   "durationMs": 8000 },
-    { "file": "02-what.html",    "durationMs": 10000 }
+    { "file": "02-divider.html", "durationMs": 5000, "transition": "wipe", "wipeColor": "teal" },
+    { "file": "03-what.html",    "durationMs": 10000 }
   ]
 }
 ```
+
+`transition` is `fade` (default), `wipe`, or `cut`. `"progress": false`
+hides the progress bar on that slide.
+
+To check one slide without waiting through the loop, open
+`http://localhost:8080/index.html?start=N` (0-based index).
 
 Images go in `slides/assets/` and reference them with relative paths:
 
@@ -191,8 +207,9 @@ Keep images under ~2 MB each &mdash; the Pi 3 only has 1 GB of RAM.
 ## Tweaks
 
 - **Slide duration:** per-slide in `manifest.json`. Default 8 s if missing.
-- **Fade speed:** `--fade-ms` in `styles.css`.
-- **Accent color:** `--accent` in `styles.css`.
+- **Fade speed:** `--fade-ms` in `styles.css` and `FADE_MS` in `app.js` (keep them equal).
+- **Brand colors:** `--orange`, `--teal`, `--ink` in `styles.css`.
+- **Pi 3 motion rules:** animate only `transform`, `opacity`, `stroke-dashoffset`.
 - **Update frequency:** edit `OnUnitActiveSec=1h` in
   `systemd/slideshow-update.timer`.
 
