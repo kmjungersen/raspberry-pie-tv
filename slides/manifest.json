@@ -12,6 +12,6 @@
     { "file": "10-divider-built-for-big-law.html", "durationMs":  5000, "transition": "wipe", "wipeColor": "orange" },
     { "file": "11-how-we-work.html",               "durationMs": 10000 },
     { "file": "12-why-srp.html",                   "durationMs": 10000 },
-    { "file": "13-cta.html",                       "durationMs": 11000, "transition": "wipe", "wipeColor": "teal", "progress": false }
+    { "file": "13-cta.html",                       "durationMs": 10000, "transition": "wipe", "wipeColor": "teal" }
   ]
 }

@@ -107,7 +107,7 @@ swap layer z-index and content while covered, then 0 → 100% over 380 ms. All
 | 10 | Divider | Wipe. As 02. |
 | 11 | How We Work | As 03. |
 | 12 | Why SRP | As 03. |
-| 13 | CTA | Wipe. Headline rises, contact line and LVNx line stagger. Progress bar hides on this slide so the loop end reads as a beat. |
+| 13 | CTA | Wipe. Headline rises, contact line and LVNx line stagger. Progress bar stays visible (hiding it read as a stall on the Pi). |
 
 ## Proposed copy (needs Kurtis's sign-off)
 
