@@ -9,6 +9,12 @@ REPO_DIR="${REPO_DIR:-$HOME/raspberry-pie-tv}"
 # We go through HTTP (not file://) because browsers block fetch() on file:// URLs.
 SLIDESHOW_URL="${SLIDESHOW_URL:-http://localhost:8080/index.html}"
 
+# Chromium blocklists the Pi's GPU by default and falls back to software
+# painting, which makes every animation jitter. These flags put compositing
+# back on the GPU (vc4-kms-v3d). Set CHROMIUM_GPU_FLAGS="" to disable if
+# Chromium crash-loops after a change.
+CHROMIUM_GPU_FLAGS="${CHROMIUM_GPU_FLAGS-"--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy"}"
+
 # Wait for the local server to come up (systemd may not have started it yet).
 for _ in $(seq 1 30); do
   if curl -fsS -o /dev/null "$SLIDESHOW_URL" 2>/dev/null; then break; fi
@@ -43,6 +49,8 @@ run_chromium() {
     --start-fullscreen
     --window-position=0,0
   )
+  # shellcheck disable=SC2206
+  flags+=($CHROMIUM_GPU_FLAGS)
 
   while true; do
     "$bin" "${flags[@]}" "$SLIDESHOW_URL"

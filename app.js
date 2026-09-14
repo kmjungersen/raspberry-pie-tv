@@ -5,7 +5,12 @@
   const MANIFEST_URL = "slides/manifest.json";
 
   // Injected at the top of every slide root so nothing on screen is ever fully still.
+  // Only in full-motion mode: continuous full-screen animation is what a Pi 3
+  // struggles with, so the default is reveals-only (short, then static).
   const AMBIENT_HTML = '<div class="ambient" aria-hidden="true"><i></i><i></i></div>';
+  const params = new URLSearchParams(location.search);
+  const FULL_MOTION = params.get("motion") === "full";
+  if (FULL_MOTION) document.documentElement.classList.add("motion-full");
 
   const layers = {
     a: document.querySelector('.slide[data-layer="a"]'),
@@ -100,7 +105,7 @@
     layer.classList.remove("in");
     layer.innerHTML = html;
     const root = layer.firstElementChild;
-    if (root && !root.querySelector(":scope > .ambient")) {
+    if (FULL_MOTION && root && !root.querySelector(":scope > .ambient")) {
       root.insertAdjacentHTML("afterbegin", AMBIENT_HTML);
     }
     prepSvg(layer);
@@ -149,7 +154,7 @@
 
 
     // Dev aid: ?start=N begins the loop at slide index N (0-based).
-    const startAt = Number(new URLSearchParams(location.search).get("start"));
+    const startAt = Number(params.get("start"));
     let idx = Number.isInteger(startAt) && startAt >= 0 && startAt < slides.length ? startAt : 0;
     let activeKey = "a";
     let first = true;

@@ -262,6 +262,40 @@ hdmi_mode=16   # 1080p @ 60 Hz
 
 Reboot.
 
+### Animations are jittery
+
+Run the diagnostic over SSH while the kiosk is up:
+
+```sh
+~/raspberry-pie-tv/scripts/diag.sh
+```
+
+Then, in order:
+
+1. **No `gpu-process` line** &rarr; Chromium is painting in software. Make sure
+   you're on a build of `run-kiosk.sh` that passes `--ignore-gpu-blocklist`
+   (check the printed command line) and that `config.txt` has
+   `dtoverlay=vc4-kms-v3d`. Reboot after changing either.
+2. **Display mode isn't `1920x1080` at `60.00*`** &rarr; the TV negotiated 30 Hz
+   or a fallback mode. Power on the TV before the Pi, or force it in
+   `/boot/firmware/config.txt`:
+   ```
+   hdmi_group=1
+   hdmi_mode=16
+   ```
+3. **Still jittery at 60 Hz with a GPU process** &rarr; render at 720p and let the
+   TV upscale. The slides are fully responsive and look identical at booth
+   distance. Add to `openbox/autostart` before `run-kiosk.sh`:
+   ```
+   xrandr --output HDMI-1 --mode 1280x720 &
+   ```
+   (`diag.sh` prints the output name if it isn't `HDMI-1`.)
+4. **`throttled` isn't `0x0`** &rarr; power supply. Use the official 2.5 A adapter.
+
+The default slideshow mode is already the light one: reveals play once, then
+the frame is static. Don't add `?motion=full` to the kiosk URL unless steps
+1 and 2 check out.
+
 ### Screen blanks after ~10 minutes
 
 `run-kiosk.sh` and Openbox autostart already disable DPMS, but some
@@ -325,7 +359,7 @@ charger. The Pi 3 needs 2.5 A at 5 V.
 
 ### Need to debug Chromium itself
 
-Add `--remote-debugging-port=9222` to `CHROMIUM_FLAGS` in
+Add `--remote-debugging-port=9222` to the `flags=(...)` array in
 `scripts/run-kiosk.sh` and reboot. Then from your laptop:
 
 ```sh

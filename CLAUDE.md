@@ -85,7 +85,8 @@ A new slide is two edits:
 - **Reveals:** put `data-reveal` on any element and stagger with `style="--i:N"` (110 ms per step) plus optional `--d:400ms` extra delay. Variants: `data-reveal="left" | "scale" | "fade" | "bar"`. Default rises up.
 - **Counters:** `<span data-count="550" data-count-from="100" data-prefix="$" data-suffix="/hr" data-count-delay="2100" data-count-duration="1000">` tweens the number when the slide plays.
 - **Icons:** every `.icon svg` stroke-draws automatically; `app.js` sets `pathLength="1"` so one CSS rule covers all shapes.
-- **Ambient background:** `app.js` injects a `.ambient` block into each slide root. Roots need `position: relative; isolation: isolate` (already on `.content`, `.divider`, `.hero`).
+- **Continuous motion is opt-in.** Default mode is reveals only: every animation finishes within ~4 s and the frame goes static, which is what a Pi 3 can composite smoothly. `index.html?motion=full` adds the drifting ambient background (`.ambient`, injected by `app.js`) and the slow hero logo zoom. Only use it if `scripts/diag.sh` shows a Chromium GPU process and 60 Hz.
+- **GPU flags:** `run-kiosk.sh` passes `--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy` via `CHROMIUM_GPU_FLAGS`. Without them Chromium paints in software on the Pi and everything jitters.
 - **Accent bars, divider rules, timeline dots** animate with no markup changes.
 - **Dev aid:** `index.html?start=N` starts the loop at slide index N (0-based) so you don't wait through the loop to check one slide.
 
@@ -95,7 +96,8 @@ Images go in `slides/assets/` and are referenced as `assets/foo.png` from inside
 
 - Tweakable display constants (`--fade-ms`, `--accent`, slide typography) &mdash; `styles.css`
 - Default slide duration and manifest path &mdash; constants at the top of `app.js`
-- Chromium kiosk flags &mdash; `CHROMIUM_FLAGS` in `scripts/run-kiosk.sh`
+- Chromium kiosk flags &mdash; `flags=(...)` and `CHROMIUM_GPU_FLAGS` in `scripts/run-kiosk.sh`
+- Smoothness diagnostics on the Pi &mdash; `scripts/diag.sh`
 - Update frequency &mdash; `OnUnitActiveSec=` in `systemd/slideshow-update.timer`
 - Packages installed on the Pi &mdash; `PKGS=(...)` in `scripts/install.sh`
 - Captive-portal AP SSID + activity timeout &mdash; env vars at the top of `scripts/wifi-connect-fallback.sh`
